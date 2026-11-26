@@ -1,0 +1,294 @@
+@import "tailwindcss";
+
+@theme {
+  --color-leaf: #65A65B;
+  --color-grass: #91C96B;
+  --color-sky: #A9DDF4;
+  --color-butter: #FFE28A;
+  --color-cream: #FFF8E9;
+  --color-blossom: #F4A6B8;
+  --color-coral: #F28C75;
+  --color-lavender: #C9B5E8;
+  --color-forest: #365B3C;
+  --color-ink: #365B3C;
+
+  --font-display: 'Fredoka', 'Nunito', sans-serif;
+  --font-sans: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-hand: 'Patrick Hand', cursive;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+}
+
+:root {
+  --bg-cream: #FFF8E9;
+  --ink-forest: #365B3C;
+  --leaf: #65A65B;
+  --grass: #91C96B;
+  --sky: #A9DDF4;
+  --butter: #FFE28A;
+  --blossom: #F4A6B8;
+  --coral: #F28C75;
+  --lavender: #C9B5E8;
+  --border-sketch: rgba(54, 91, 60, 0.24);
+  --border-strong: rgba(54, 91, 60, 0.42);
+}
+
+html,
+body {
+  background-color: var(--bg-cream);
+  color: var(--ink-forest);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100%;
+}
+
+/* Warm storybook paper surface with gentle watercolor sky wash and paper grain */
+.storybook-surface {
+  background-color: #FFF8E9;
+  background-image:
+    radial-gradient(circle at 12% 8%, rgba(169, 221, 244, 0.42) 0%, transparent 45%),
+    radial-gradient(circle at 88% 12%, rgba(255, 226, 138, 0.32) 0%, transparent 40%),
+    radial-gradient(circle at 50% 96%, rgba(145, 201, 107, 0.22) 0%, transparent 45%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+}
+
+/* Tactile storybook card with soft organic shadow and hand-drawn outline */
+.storybook-card {
+  background-color: #FFFDF7;
+  border: 2px solid var(--border-sketch);
+  box-shadow:
+    0 4px 0 rgba(54, 91, 60, 0.12),
+    0 10px 24px rgba(54, 91, 60, 0.08);
+}
+
+/* Picnic-table subtle gingham trim for gameplay board */
+.picnic-cloth-edge {
+  background-image: repeating-linear-gradient(
+    45deg,
+    rgba(145, 201, 107, 0.18) 0px,
+    rgba(145, 201, 107, 0.18) 10px,
+    rgba(255, 248, 233, 0.9) 10px,
+    rgba(255, 248, 233, 0.9) 20px
+  );
+}
+
+/* Playful stitched invitation border for Room Code */
+.invitation-card {
+  background-color: #FFF6DC;
+  border: 2px dashed rgba(54, 91, 60, 0.35);
+  box-shadow: 0 3px 0 rgba(54, 91, 60, 0.1);
+}
+
+/* Playful tactile game buttons */
+.btn-leaf {
+  background-color: var(--leaf);
+  color: #FFFDF7;
+  border: 2px solid #365B3C;
+  box-shadow: 0 4px 0 #365B3C;
+  transition: transform 140ms cubic-bezier(0.34, 1.56, 0.64, 1), background-color 140ms ease, box-shadow 140ms ease;
+}
+
+.btn-leaf:hover:not(:disabled) {
+  background-color: #59984F;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 #365B3C;
+}
+
+.btn-leaf:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 #365B3C;
+}
+
+.btn-leaf:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.btn-butter {
+  background-color: var(--butter);
+  color: #365B3C;
+  border: 2px solid #365B3C;
+  box-shadow: 0 4px 0 #365B3C;
+  transition: transform 140ms cubic-bezier(0.34, 1.56, 0.64, 1), background-color 140ms ease, box-shadow 140ms ease;
+}
+
+.btn-butter:hover:not(:disabled) {
+  background-color: #FFD96A;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 #365B3C;
+}
+
+.btn-butter:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 #365B3C;
+}
+
+.btn-butter:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.btn-cream {
+  background-color: #FFFDF7;
+  color: #365B3C;
+  border: 2px solid var(--border-strong);
+  box-shadow: 0 3px 0 rgba(54, 91, 60, 0.18);
+  transition: transform 140ms cubic-bezier(0.34, 1.56, 0.64, 1), background-color 140ms ease, box-shadow 140ms ease;
+}
+
+.btn-cream:hover:not(:disabled) {
+  background-color: #FFF3D1;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 0 rgba(54, 91, 60, 0.22);
+}
+
+.btn-cream:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow: 0 1px 0 rgba(54, 91, 60, 0.16);
+}
+
+.btn-cream:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Joyful, lightweight storybook animations */
+@keyframes flowerSway {
+  0%, 100% {
+    transform: rotate(-3deg);
+  }
+  50% {
+    transform: rotate(3.5deg);
+  }
+}
+
+@keyframes cloudDrift {
+  0%, 100% {
+    transform: translateX(0px);
+  }
+  50% {
+    transform: translateX(12px);
+  }
+}
+
+@keyframes butterflyFloat {
+  0%, 100% {
+    transform: translate(0px, 0px) rotate(-4deg);
+  }
+  50% {
+    transform: translate(8px, -7px) rotate(5deg);
+  }
+}
+
+@keyframes tileBouncePop {
+  0% {
+    opacity: 0.5;
+    transform: scale(0.84) rotate(-3deg);
+  }
+  65% {
+    opacity: 1;
+    transform: scale(1.06) rotate(1.5deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+@keyframes gentleWiggle {
+  0%, 100% {
+    transform: translateX(0) rotate(0deg);
+  }
+  25% {
+    transform: translateX(-4px) rotate(-1deg);
+  }
+  50% {
+    transform: translateX(4px) rotate(1deg);
+  }
+  75% {
+    transform: translateX(-2px) rotate(-0.5deg);
+  }
+}
+
+@keyframes turnPop {
+  0% {
+    transform: scale(0.98);
+  }
+  60% {
+    transform: scale(1.015);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes petalConfetti {
+  0% {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.7) rotate(0deg);
+  }
+  25% {
+    opacity: 1;
+    transform: translateY(8px) scale(1) rotate(25deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(44px) scale(0.85) rotate(85deg);
+  }
+}
+
+.animate-sway {
+  transform-origin: bottom center;
+  animation: flowerSway 4.2s ease-in-out infinite;
+}
+
+.animate-cloud {
+  animation: cloudDrift 9s ease-in-out infinite;
+}
+
+.animate-butterfly {
+  animation: butterflyFloat 4.8s ease-in-out infinite;
+}
+
+.animate-tile-pop {
+  animation: tileBouncePop 320ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.animate-life-shake {
+  animation: gentleWiggle 360ms ease-in-out both;
+}
+
+.animate-turn-switch {
+  animation: turnPop 260ms ease-out both;
+}
+
+.animate-petal {
+  animation: petalConfetti 2.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-sway,
+  .animate-cloud,
+  .animate-butterfly,
+  .animate-tile-pop,
+  .animate-life-shake,
+  .animate-turn-switch,
+  .animate-petal {
+    animation: none !important;
+  }
+
+  .btn-leaf,
+  .btn-butter,
+  .btn-cream {
+    transition: none !important;
+  }
+
+  .btn-leaf:hover:not(:disabled),
+  .btn-butter:hover:not(:disabled),
+  .btn-cream:hover:not(:disabled),
+  .btn-leaf:active:not(:disabled),
+  .btn-butter:active:not(:disabled),
+  .btn-cream:active:not(:disabled) {
+    transform: none !important;
+  }
+}

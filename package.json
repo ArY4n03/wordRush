@@ -1,0 +1,32 @@
+{
+  "name": "word-rush",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "oxlint",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "doc": "npx markdown-pdf DOCUMENTATION.md -o WORD_RUSH_Documentation.pdf"
+  },
+  "dependencies": {
+    "lucide-react": "^1.81.0",
+    "markdown-pdf": "^11.0.0",
+    "peerjs": "^1.5.5",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.5",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "oxlint": "^1.90.0",
+    "tailwindcss": "^4.3.5",
+    "vite": "^8.3.6",
+    "vitest": "^5.1.2"
+  }
+}
