@@ -1,5 +1,5 @@
 import Peer from 'peerjs'
-import { GAME_CONFIG, getNetworkConfig } from '../game/gameConfig.js'
+import { GAME_CONFIG, resolveNetworkConfig } from '../game/gameConfig.js'
 import { MESSAGE_TYPES, createMessage, validateMessage } from '../game/messageProtocol.js'
 
 /**
@@ -10,6 +10,7 @@ export class PeerService {
   constructor() {
     this.peer = null
     this.role = null // 'host' | 'client'
+    this.initGeneration = 0
     this.connections = new Map() // peerId -> DataConnection
     this.lastSeen = new Map() // peerId -> timestamp
     this.heartbeatInterval = null
@@ -34,12 +35,18 @@ export class PeerService {
    * Initializes a PeerJS node.
    * For host, pass explicit deterministic `peerId`; for client, omit to get an ephemeral ID.
    */
-  initPeer(peerId = undefined, role = 'client') {
+  async initPeer(peerId = undefined, role = 'client') {
     this.destroy()
+    const gen = ++this.initGeneration
     this.role = role
     this.emitStatus('connecting')
 
-    const { peerOptions } = getNetworkConfig()
+    const { peerOptions } = await resolveNetworkConfig()
+    if (gen !== this.initGeneration) {
+      const err = new Error('Peer initialization was cancelled.')
+      err.type = 'cancelled'
+      throw err
+    }
 
     return new Promise((resolve, reject) => {
       let settled = false
@@ -53,7 +60,7 @@ export class PeerService {
           err.type = 'signaling-timeout'
           reject(err)
         }
-      }, 12_000)
+      }, 15_000)
 
       peer.on('open', (id) => {
         if (!settled) {
@@ -127,7 +134,7 @@ export class PeerService {
           }
           reject(new Error('Could not reach room host. Verify the room code and try again.'))
         }
-      }, 12_000)
+      }, 25_000)
 
       this.attachConnection(conn, 'host', {
         onOpenOnce: () => {
@@ -187,6 +194,17 @@ export class PeerService {
       }
 
       this.handlers.onMessage?.(remotePeerId, msg)
+    })
+
+    conn.on('iceStateChanged', (state) => {
+      if (state === 'failed') {
+        const iceErr = new Error(
+          'Direct and relayed WebRTC connection failed. A strict firewall or NAT may be blocking peer traffic.',
+        )
+        iceErr.type = 'ice-failed'
+        lifecycleHooks.onErrorOnce?.(iceErr)
+        handleClose()
+      }
     })
 
     conn.on('close', handleClose)
@@ -264,6 +282,7 @@ export class PeerService {
   }
 
   destroy() {
+    this.initGeneration += 1
     this.stopHeartbeat()
     for (const conn of this.connections.values()) {
       try {

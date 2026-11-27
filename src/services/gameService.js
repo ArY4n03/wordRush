@@ -446,6 +446,9 @@ export class GameService {
     if (err.type === 'unavailable-id') {
       return 'Room code collision on signaling server. Please try again.'
     }
+    if (err.type === 'ice-failed') {
+      return 'Could not establish a peer-to-peer connection across networks. Please retry or check your firewall/TURN settings.'
+    }
     if (err.type === 'network' || err.type === 'server-error' || err.type === 'socket-error') {
       return 'Unable to reach PeerJS signaling server. Check your internet connection.'
     }

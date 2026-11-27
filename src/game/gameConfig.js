@@ -39,13 +39,42 @@ export function getNetworkConfig() {
     { urls: 'stun:stun.l.google.com:19302' },
     { urls: 'stun:stun1.l.google.com:19302' },
     { urls: 'stun:stun2.l.google.com:19302' },
+    { urls: 'stun:openrelay.metered.ca:80' },
   ]
 
   if (env.VITE_TURN_URL) {
-    const turnEntry = { urls: env.VITE_TURN_URL }
-    if (env.VITE_TURN_USERNAME) turnEntry.username = env.VITE_TURN_USERNAME
-    if (env.VITE_TURN_CREDENTIAL) turnEntry.credential = env.VITE_TURN_CREDENTIAL
-    iceServers.push(turnEntry)
+    const urls = String(env.VITE_TURN_URL)
+      .split(',')
+      .map((u) => u.trim())
+      .filter(Boolean)
+    if (urls.length > 0) {
+      const turnEntry = { urls: urls.length === 1 ? urls[0] : urls }
+      if (env.VITE_TURN_USERNAME) turnEntry.username = env.VITE_TURN_USERNAME
+      if (env.VITE_TURN_CREDENTIAL) turnEntry.credential = env.VITE_TURN_CREDENTIAL
+      iceServers.push(turnEntry)
+    }
+  }
+
+  // Fallback public TURN relays (UDP + TCP + TLS on ports 80/443) so remote
+  // peers behind symmetric NATs or strict firewalls can connect out of the box.
+  if (!parseBoolEnv(env.VITE_DISABLE_DEFAULT_TURN, false)) {
+    iceServers.push(
+      {
+        urls: 'turn:openrelay.metered.ca:80',
+        username: 'openrelayproject',
+        credential: 'openrelayproject',
+      },
+      {
+        urls: 'turn:openrelay.metered.ca:443',
+        username: 'openrelayproject',
+        credential: 'openrelayproject',
+      },
+      {
+        urls: 'turns:openrelay.metered.ca:443',
+        username: 'openrelayproject',
+        credential: 'openrelayproject',
+      },
+    )
   }
 
   // If VITE_PEER_HOST is omitted, PeerJS uses its public cloud signaling server.
@@ -53,6 +82,7 @@ export function getNetworkConfig() {
     debug: env.DEV ? 1 : 0,
     config: {
       iceServers,
+      iceCandidatePoolSize: 10,
     },
   }
 
@@ -68,5 +98,50 @@ export function getNetworkConfig() {
     peerOptions,
     discoveryUrl: env.VITE_DISCOVERY_URL || '',
     dictionaryProvider: env.VITE_DICTIONARY_PROVIDER || 'free-dictionary-api',
+    turnApiUrl:
+      env.VITE_TURN_API_URL ||
+      (env.VITE_METERED_API_KEY
+        ? `https://openrelay.metered.ca/api/v1/turn/credentials?apiKey=${encodeURIComponent(env.VITE_METERED_API_KEY)}`
+        : ''),
   }
+}
+
+/**
+ * Resolves network config, optionally fetching geo-located TURN credentials
+ * from `VITE_TURN_API_URL` or `VITE_METERED_API_KEY` with a short timeout.
+ */
+export async function resolveNetworkConfig() {
+  const base = getNetworkConfig()
+  if (!base.turnApiUrl || typeof fetch !== 'function') {
+    return base
+  }
+
+  const controller = typeof AbortController !== 'undefined' ? new AbortController() : null
+  const timer = setTimeout(() => controller?.abort(), 2_500)
+
+  try {
+    const res = await fetch(base.turnApiUrl, {
+      signal: controller?.signal,
+    })
+    if (!res.ok) return base
+    const dynamicIceServers = await res.json()
+    if (Array.isArray(dynamicIceServers) && dynamicIceServers.length > 0) {
+      return {
+        ...base,
+        peerOptions: {
+          ...base.peerOptions,
+          config: {
+            ...base.peerOptions.config,
+            iceServers: [...dynamicIceServers, ...base.peerOptions.config.iceServers],
+          },
+        },
+      }
+    }
+  } catch {
+    // Fall back to static STUN/TURN servers silently
+  } finally {
+    clearTimeout(timer)
+  }
+
+  return base
 }
